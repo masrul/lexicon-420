@@ -119,13 +119,11 @@ export function initStudy(words) {
 
     byId('answer').classList.toggle('hidden', !revealed);
     byId('details').classList.toggle('hidden', !revealed);
-    byId('reveal').textContent = revealed
-      ? 'Hide meaning & explanation'
-      : 'Reveal meaning & explanation';
+    byId('reveal').textContent = revealed ? 'Hide meaning' : 'Reveal meaning';
     byId('reveal').setAttribute('aria-expanded', String(revealed));
     byId('learned').textContent = status.learned ? '✓ Learned' : '✓ Mark learned';
     byId('learned').classList.toggle('active', Boolean(status.learned));
-    byId('bookmark').textContent = status.bookmark ? '★ Bookmarked' : '☆ Save card';
+    byId('bookmark').textContent = status.bookmark ? '★ Bookmarked' : '☆ Bookmark';
     byId('bookmark').classList.toggle('active', Boolean(status.bookmark));
   }
 

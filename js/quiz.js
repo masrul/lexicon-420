@@ -4,6 +4,7 @@ import { getWordProgress } from './progress.js';
 export function initQuiz(words) {
   const quizContent = byId('quizContent');
   const quizLaunch = byId('quizLaunch');
+  const cardsMode = byId('cardsMode');
   let questions = [];
   let choicePool = [];
   let questionIndex = 0;
@@ -29,14 +30,22 @@ export function initQuiz(words) {
 
   function leaveQuiz() {
     document.body.classList.remove('quiz-mode');
+    quizLaunch.classList.remove('active');
+    quizLaunch.removeAttribute('aria-current');
+    cardsMode.classList.add('active');
+    cardsMode.setAttribute('aria-current', 'page');
     quizContent.replaceChildren();
-    quizLaunch.focus();
+    cardsMode.focus();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   function startQuiz(retryWords = null) {
     choicePool = words.filter(word => getWordProgress(word.word).learned);
     document.body.classList.add('quiz-mode');
+    cardsMode.classList.remove('active');
+    cardsMode.removeAttribute('aria-current');
+    quizLaunch.classList.add('active');
+    quizLaunch.setAttribute('aria-current', 'page');
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
     if (choicePool.length < 4) {
@@ -230,4 +239,5 @@ export function initQuiz(words) {
   }
 
   quizLaunch.addEventListener('click', () => startQuiz());
+  cardsMode.addEventListener('click', leaveQuiz);
 }
