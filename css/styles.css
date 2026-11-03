@@ -74,7 +74,8 @@
 @media(max-width:500px){.toolbar{grid-template-columns:minmax(0,1fr) 104px}.filter-icon{width:104px;padding:0 10px}}
 
 /* Card navigation with shuffle between the arrows. */
-.inline-card-nav{display:flex;align-items:center;gap:7px;margin-left:auto}
+.cardmeta{width:100%}
+.inline-card-nav{display:flex;align-items:center;justify-content:space-evenly;width:100%;gap:7px;margin:0}
 .inline-card-nav .btn{width:34px;height:34px;min-width:34px;min-height:34px;padding:0;display:grid;place-items:center;border-radius:10px;font-size:17px;box-shadow:none}
 .inline-card-nav .pos{min-height:34px;display:grid;place-items:center;padding:4px 12px}
 @media(max-width:500px){.inline-card-nav{gap:5px}.inline-card-nav .btn{width:32px;height:32px;min-width:32px;min-height:32px}.inline-card-nav .pos{min-height:32px;padding:3px 9px}.cardmeta{font-size:11px}}
