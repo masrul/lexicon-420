@@ -9,19 +9,23 @@ export function initStudy(words) {
   let visible = [];
   let index = 0;
   let revealed = false;
+  let suggestionIndex = -1;
+  let focusCardAfterRender = false;
 
-  const matching = (word, query) => [
-    word.word,
-    word.meaning,
-    word.bn,
-    word.simple,
-    word.syn || '',
-    word.ant || '',
-  ].some(value => value.toLocaleLowerCase().includes(query));
+  const search = byId('search');
+  const searchWrap = search.closest('.control-wrap');
+  const suggestions = element('div', 'search-suggestions hidden');
+  suggestions.id = 'searchSuggestions';
+  suggestions.setAttribute('role', 'listbox');
+  suggestions.setAttribute('aria-label', 'Word suggestions');
+  searchWrap.append(suggestions);
+  search.setAttribute('role', 'combobox');
+  search.setAttribute('aria-autocomplete', 'list');
+  search.setAttribute('aria-controls', suggestions.id);
+  search.setAttribute('aria-expanded', 'false');
 
   function applyFilters(keepSelection = true) {
     const selectedWord = keepSelection ? visible[index]?.word : null;
-    const query = byId('search').value.trim().toLocaleLowerCase();
     const filter = byId('filter').value;
 
     visible = words.filter(word => {
@@ -30,7 +34,7 @@ export function initStudy(words) {
         || (filter === 'learned' && status.learned)
         || (filter === 'unlearned' && !status.learned)
         || (filter === 'bookmarked' && status.bookmark);
-      return matching(word, query) && matchesFilter;
+      return matchesFilter;
     });
 
     const selectedIndex = visible.findIndex(word => word.word === selectedWord);
@@ -39,14 +43,93 @@ export function initStudy(words) {
     render();
   }
 
-  function goTo(nextIndex) {
+  function goTo(nextIndex, focusCard = false) {
     if (nextIndex < 0 || nextIndex >= visible.length) return;
     index = nextIndex;
     revealed = false;
+    focusCardAfterRender = focusCard;
     render();
-    if (window.innerWidth < 761) {
-      byId('card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (focusCard || window.innerWidth < 761) {
+      const card = byId('card');
+      if (focusCard) {
+        card.tabIndex = -1;
+        card.focus({ preventScroll: true });
+      }
+      card.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
+    focusCardAfterRender = false;
+  }
+
+  function closeSuggestions() {
+    suggestions.classList.add('hidden');
+    suggestionIndex = -1;
+    search.setAttribute('aria-expanded', 'false');
+    search.removeAttribute('aria-activedescendant');
+  }
+
+  function chooseSuggestion(word) {
+    search.value = word.word;
+    byId('filter').value = 'all';
+    applyFilters(false);
+    const wordIndex = visible.findIndex(item => item.word === word.word);
+    if (wordIndex >= 0) goTo(wordIndex, true);
+    closeSuggestions();
+  }
+
+  function updateSuggestions() {
+    const query = search.value.trim().toLocaleLowerCase();
+    suggestions.replaceChildren();
+    suggestionIndex = -1;
+    if (!query) {
+      closeSuggestions();
+      return;
+    }
+
+    const matches = words
+      .filter(item => item.word.toLocaleLowerCase().includes(query))
+      .sort((a, b) => {
+        const aPrefix = a.word.toLocaleLowerCase().startsWith(query) ? 0 : 1;
+        const bPrefix = b.word.toLocaleLowerCase().startsWith(query) ? 0 : 1;
+        return aPrefix - bPrefix || a.word.localeCompare(b.word);
+      })
+      .slice(0, 5);
+
+    if (!matches.length) {
+      closeSuggestions();
+      return;
+    }
+
+    matches.forEach((item, matchIndex) => {
+      const button = element('button', 'search-suggestion');
+      const lowerWord = item.word.toLocaleLowerCase();
+      const matchStart = lowerWord.indexOf(query);
+      button.type = 'button';
+      button.id = `searchSuggestion${matchIndex}`;
+      button.setAttribute('role', 'option');
+      button.dataset.word = item.word;
+      if (matchStart > 0) button.append(document.createTextNode(item.word.slice(0, matchStart)));
+      button.append(element('mark', '', item.word.slice(matchStart, matchStart + query.length)));
+      if (matchStart + query.length < item.word.length) {
+        button.append(document.createTextNode(item.word.slice(matchStart + query.length)));
+      }
+      button.addEventListener('mousedown', event => event.preventDefault());
+      button.addEventListener('click', () => chooseSuggestion(item));
+      suggestions.append(button);
+    });
+    suggestions.classList.remove('hidden');
+    search.setAttribute('aria-expanded', 'true');
+  }
+
+  function moveSuggestion(direction) {
+    const options = Array.from(suggestions.querySelectorAll('.search-suggestion'));
+    if (!options.length) return;
+    suggestionIndex = (suggestionIndex + direction + options.length) % options.length;
+    options.forEach((option, optionIndex) => {
+      const active = optionIndex === suggestionIndex;
+      option.classList.toggle('active', active);
+      option.setAttribute('aria-selected', String(active));
+    });
+    search.setAttribute('aria-activedescendant', options[suggestionIndex].id);
   }
 
   function renderStats() {
@@ -101,7 +184,7 @@ export function initStudy(words) {
     });
 
     list.append(fragment);
-    list.querySelector('.current')?.scrollIntoView({ block: 'nearest' });
+    if (!focusCardAfterRender) list.querySelector('.current')?.scrollIntoView({ block: 'nearest' });
   }
 
   function renderCard() {
@@ -207,7 +290,25 @@ export function initStudy(words) {
 
   byId('prev').addEventListener('click', () => goTo(index - 1));
   byId('next').addEventListener('click', () => goTo(index + 1));
-  byId('search').addEventListener('input', () => applyFilters(false));
+  search.addEventListener('input', () => {
+    updateSuggestions();
+  });
+  search.addEventListener('keydown', event => {
+    if (suggestions.classList.contains('hidden')) return;
+    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+      event.preventDefault();
+      moveSuggestion(event.key === 'ArrowDown' ? 1 : -1);
+    } else if (event.key === 'Enter' && suggestionIndex >= 0) {
+      event.preventDefault();
+      const selected = suggestions.querySelectorAll('.search-suggestion')[suggestionIndex];
+      const word = words.find(item => item.word === selected?.dataset.word);
+      if (word) chooseSuggestion(word);
+    } else if (event.key === 'Escape') {
+      closeSuggestions();
+    }
+  });
+  search.addEventListener('focus', updateSuggestions);
+  search.addEventListener('blur', closeSuggestions);
   byId('filter').addEventListener('change', () => applyFilters(false));
   byId('shuffle').addEventListener('click', () => {
     if (visible.length < 2) return;

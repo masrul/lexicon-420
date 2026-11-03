@@ -1,5 +1,5 @@
 import { loadWords } from './data.js';
-import { initStudy } from './study.js?v=20261103-5';
+import { initStudy } from './study.js?v=20261103-9';
 import { initQuiz } from './quiz.js';
 import { initFirebaseSync } from './firebase-sync.js?v=20261103-2';
 
@@ -55,12 +55,36 @@ async function start() {
     initStudy(words);
     initQuiz(words);
     initFirebaseSync();
+    const card = document.getElementById('card');
+    const wordIndex = document.querySelector('.side');
+    const syncWordIndexHeight = () => {
+      if (window.innerWidth > 800 && card && wordIndex && !card.classList.contains('hidden')) {
+        wordIndex.style.height = `${card.offsetHeight}px`;
+      } else {
+        wordIndex?.style.removeProperty('height');
+      }
+    };
+    if (card && wordIndex) {
+      new ResizeObserver(syncWordIndexHeight).observe(card);
+      window.addEventListener('resize', syncWordIndexHeight);
+      syncWordIndexHeight();
+    }
     const appMenu = document.getElementById('appMenu');
     appMenu?.addEventListener('toggle', () => {
       if (appMenu.open) document.querySelector('.filter-menu')?.removeAttribute('open');
     });
     appMenu?.addEventListener('click', event => {
       if (event.target.closest('button')) appMenu.removeAttribute('open');
+    });
+    document.addEventListener('click', event => {
+      const accountIndicator = document.getElementById('accountIndicator');
+      if (
+        appMenu?.open
+        && !appMenu.contains(event.target)
+        && !accountIndicator?.contains(event.target)
+      ) {
+        appMenu.removeAttribute('open');
+      }
     });
   } catch (error) {
     console.error(error);
