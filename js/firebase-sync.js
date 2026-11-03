@@ -18,6 +18,7 @@ const FIREBASE_CONFIG = {
 export async function initFirebaseSync() {
   const authButton = byId('authButton');
   const syncStatus = byId('syncStatus');
+  const accountIndicator = byId('accountIndicator');
   const setStatus = (message, tone = '') => {
     syncStatus.textContent = message;
     syncStatus.className = `sync-status${tone ? ` ${tone}` : ''}`;
@@ -44,6 +45,16 @@ export async function initFirebaseSync() {
       if (!user) {
         authButton.textContent = '☁ Sign in to sync';
         authButton.setAttribute('aria-label', 'Sign in to synchronise progress');
+        accountIndicator.className = 'account-indicator signed-out';
+        accountIndicator.replaceChildren();
+        const dot = document.createElement('span');
+        dot.className = 'account-dot';
+        dot.setAttribute('aria-hidden', 'true');
+        const label = document.createElement('span');
+        label.id = 'accountIndicatorLabel';
+        label.textContent = 'Signed out';
+        accountIndicator.append(dot, label);
+        accountIndicator.setAttribute('aria-label', 'Signed out. Open account menu');
         return;
       }
 
@@ -59,6 +70,26 @@ export async function initFirebaseSync() {
       label.textContent = `${user.displayName?.split(' ')[0] || 'Account'} · Sign out`;
       authButton.append(label);
       authButton.setAttribute('aria-label', 'Signed in. Sign out of progress synchronisation');
+
+      accountIndicator.className = 'account-indicator signed-in';
+      accountIndicator.replaceChildren();
+      if (user.photoURL) {
+        const indicatorPhoto = document.createElement('img');
+        indicatorPhoto.className = 'account-avatar';
+        indicatorPhoto.src = user.photoURL;
+        indicatorPhoto.alt = '';
+        accountIndicator.append(indicatorPhoto);
+      } else {
+        const dot = document.createElement('span');
+        dot.className = 'account-dot';
+        dot.setAttribute('aria-hidden', 'true');
+        accountIndicator.append(dot);
+      }
+      const indicatorLabel = document.createElement('span');
+      indicatorLabel.id = 'accountIndicatorLabel';
+      indicatorLabel.textContent = user.displayName?.split(' ')[0] || 'Signed in';
+      accountIndicator.append(indicatorLabel);
+      accountIndicator.setAttribute('aria-label', `Signed in as ${user.displayName || user.email || 'user'}. Open account menu`);
     }
 
     async function syncNow() {
@@ -89,6 +120,11 @@ export async function initFirebaseSync() {
 
     subscribeToProgress(({ origin }) => {
       if (origin === 'local' && currentUser) queueSync();
+    });
+
+    accountIndicator.addEventListener('click', () => {
+      const appMenu = byId('appMenu');
+      appMenu.open = !appMenu.open;
     });
 
     authButton.addEventListener('click', async () => {

@@ -52,6 +52,30 @@ export function initStudy(words) {
   function renderStats() {
     const learned = words.filter(word => getWordProgress(word.word).learned).length;
     const bookmarked = words.filter(word => getWordProgress(word.word).bookmark).length;
+    const counts = {
+      all: words.length,
+      unlearned: words.length - learned,
+      learned,
+      bookmarked,
+    };
+    const labels = {
+      all: 'All words',
+      unlearned: 'Not learned',
+      learned: 'Learned',
+      bookmarked: 'Bookmarked',
+    };
+    const filter = byId('filter');
+    Array.from(filter.options).forEach(option => {
+      option.textContent = `${labels[option.value]} (${counts[option.value]})`;
+    });
+    byId('filterLabel').textContent = `${labels[filter.value]} (${counts[filter.value]})`;
+    document.querySelectorAll('[data-filter]').forEach(button => {
+      const value = button.dataset.filter;
+      button.textContent = `${labels[value]} (${counts[value]})`;
+      button.classList.toggle('active', value === filter.value);
+      if (value === filter.value) button.setAttribute('aria-current', 'true');
+      else button.removeAttribute('aria-current');
+    });
     byId('progressLabel').textContent = `${learned} / ${words.length} learned`;
     byId('progressFill').style.width = `${(learned / words.length) * 100}%`;
     byId('bookmarkCount').textContent = `${bookmarked} bookmarked`;
@@ -92,7 +116,7 @@ export function initStudy(words) {
     const word = visible[index];
     const status = getWordProgress(word.word);
     byId('position').textContent = `WORD ${String(word.id).padStart(3, '0')} / ${words.length}`;
-    byId('pos').textContent = word.pos || 'Vocabulary';
+    byId('pos').textContent = `(${word.pos || 'vocabulary'})`;
     byId('word').textContent = word.word;
     byId('meaning').textContent = word.meaning;
     byId('bangla').textContent = word.bn;
@@ -120,12 +144,12 @@ export function initStudy(words) {
     byId('answer').classList.toggle('hidden', !revealed);
     byId('details').classList.toggle('hidden', !revealed);
     byId('reveal').textContent = revealed
-      ? 'Hide meaning & explanation'
-      : 'Reveal meaning & explanation';
+      ? 'Hide'
+      : 'Reveal';
     byId('reveal').setAttribute('aria-expanded', String(revealed));
     byId('learned').textContent = status.learned ? '✓ Learned' : '✓ Mark learned';
     byId('learned').classList.toggle('active', Boolean(status.learned));
-    byId('bookmark').textContent = status.bookmark ? '★ Bookmarked' : '☆ Save card';
+    byId('bookmark').textContent = status.bookmark ? '★ Bookmarked' : '☆ Bookmark';
     byId('bookmark').classList.toggle('active', Boolean(status.bookmark));
   }
 
@@ -190,6 +214,38 @@ export function initStudy(words) {
     const randomIndex = Math.floor(Math.random() * (visible.length - 1));
     goTo(randomIndex >= index ? randomIndex + 1 : randomIndex);
   });
+
+  const pronounceButton = byId('pronounce');
+  if ('speechSynthesis' in window && 'SpeechSynthesisUtterance' in window) {
+    pronounceButton.addEventListener('click', () => {
+      const word = visible[index];
+      if (!word) return;
+      const speaker = window.speechSynthesis;
+      speaker.cancel();
+      pronounceButton.classList.add('speaking');
+      pronounceButton.setAttribute('aria-label', `Playing pronunciation for ${word.word}`);
+      setTimeout(() => {
+        const utterance = new SpeechSynthesisUtterance(word.word);
+        const englishVoices = speaker.getVoices().filter(voice => voice.lang.toLowerCase().startsWith('en'));
+        utterance.voice = englishVoices.find(voice => voice.lang.toLowerCase() === 'en-us') || englishVoices[0] || null;
+        utterance.lang = utterance.voice?.lang || 'en-US';
+        utterance.rate = 0.78;
+        utterance.pitch = 1;
+        utterance.volume = 1;
+        const finish = () => {
+          pronounceButton.classList.remove('speaking');
+          pronounceButton.setAttribute('aria-label', 'Hear pronunciation');
+        };
+        utterance.onend = finish;
+        utterance.onerror = finish;
+        speaker.speak(utterance);
+        speaker.resume();
+      }, 80);
+    });
+  } else {
+    pronounceButton.disabled = true;
+    pronounceButton.title = 'Pronunciation is not supported by this browser';
+  }
 
   document.addEventListener('keydown', event => {
     if (document.body.classList.contains('quiz-mode')) return;
