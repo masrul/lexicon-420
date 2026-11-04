@@ -131,3 +131,7 @@
 .filter-panel button.active{background:var(--soft);color:var(--accent);font-weight:800}
 .filter-panel button.active:after{content:'✓';position:absolute;right:12px}
 @media(max-width:500px){.filter-menu>summary{width:148px}.filter-panel{right:0;width:200px}}
+
+/* Keep iOS finder focus at the current zoom and contain swipe overflow. */
+html,body{max-width:100%;overflow-x:hidden;overflow-x:clip}
+@media(max-width:800px){input.field{font-size:16px}}
