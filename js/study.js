@@ -43,13 +43,13 @@ export function initStudy(words) {
     render();
   }
 
-  function goTo(nextIndex, focusCard = false) {
+  function goTo(nextIndex, focusCard = false, scrollCard = true) {
     if (nextIndex < 0 || nextIndex >= visible.length) return;
     index = nextIndex;
     revealed = false;
     focusCardAfterRender = focusCard;
     render();
-    if (focusCard || window.innerWidth < 761) {
+    if (focusCard || (scrollCard && window.innerWidth < 761)) {
       const card = byId('card');
       if (focusCard) {
         card.tabIndex = -1;
@@ -290,6 +290,28 @@ export function initStudy(words) {
 
   byId('prev').addEventListener('click', () => goTo(index - 1));
   byId('next').addEventListener('click', () => goTo(index + 1));
+
+  const flashcard = byId('card').querySelector('.flash');
+  let swipeStart = null;
+
+  flashcard.addEventListener('pointerdown', event => {
+    if (event.pointerType !== 'touch') return;
+    swipeStart = { id: event.pointerId, x: event.clientX, y: event.clientY };
+  });
+
+  flashcard.addEventListener('pointerup', event => {
+    if (!swipeStart || swipeStart.id !== event.pointerId) return;
+    const deltaX = event.clientX - swipeStart.x;
+    const deltaY = event.clientY - swipeStart.y;
+    swipeStart = null;
+    if (Math.abs(deltaX) < 55 || Math.abs(deltaX) < Math.abs(deltaY) * 1.35) return;
+    event.preventDefault();
+    goTo(index + (deltaX < 0 ? 1 : -1), false, false);
+  });
+
+  flashcard.addEventListener('pointercancel', () => {
+    swipeStart = null;
+  });
   search.addEventListener('input', () => {
     updateSuggestions();
   });
