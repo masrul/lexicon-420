@@ -49,13 +49,16 @@ export function initStudy(words) {
     revealed = false;
     focusCardAfterRender = focusCard;
     render();
-    if (focusCard || (scrollCard && window.innerWidth < 761)) {
+    if (focusCard) {
       const card = byId('card');
-      if (focusCard) {
-        card.tabIndex = -1;
-        card.focus({ preventScroll: true });
-      }
-      card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      card.classList.remove('finder-focus-glow');
+      void card.offsetWidth;
+      card.classList.add('finder-focus-glow');
+      setTimeout(() => card.classList.remove('finder-focus-glow'), 2100);
+    } else if (scrollCard && window.innerWidth < 761) {
+      const card = byId('card');
+      const cardTop = window.scrollY + card.getBoundingClientRect().top - 12;
+      window.scrollTo({ top: cardTop, left: window.scrollX, behavior: 'smooth' });
     }
     focusCardAfterRender = false;
   }
@@ -184,7 +187,17 @@ export function initStudy(words) {
     });
 
     list.append(fragment);
-    if (!focusCardAfterRender) list.querySelector('.current')?.scrollIntoView({ block: 'nearest' });
+    if (!focusCardAfterRender) {
+      const current = list.querySelector('.current');
+      if (current) {
+        const itemTop = current.offsetTop;
+        const itemBottom = itemTop + current.offsetHeight;
+        if (itemTop < list.scrollTop) list.scrollTop = itemTop;
+        else if (itemBottom > list.scrollTop + list.clientHeight) {
+          list.scrollTop = itemBottom - list.clientHeight;
+        }
+      }
+    }
   }
 
   function renderCard() {
