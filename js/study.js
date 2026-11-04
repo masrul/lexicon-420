@@ -316,9 +316,9 @@ export function initStudy(words) {
       return;
     }
     shuffleAnimating = true;
-    flashcard.classList.add('shuffle-toss');
+    flashcard.classList.add('shuffle-random', 'shuffle-toss');
     setTimeout(() => {
-      flashcard.classList.remove('shuffle-toss');
+      flashcard.classList.remove('shuffle-random', 'shuffle-toss');
       goTo(targetIndex, false, false);
       flashcard.classList.add('shuffle-deal');
       setTimeout(() => {
