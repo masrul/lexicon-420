@@ -304,10 +304,27 @@ export function initStudy(words) {
   byId('prev').addEventListener('click', () => goTo(index - 1, false, false));
   byId('next').addEventListener('click', () => goTo(index + 1, false, false));
 
-  function shuffleVisible() {
-    if (visible.length < 2) return;
+  let shuffleAnimating = false;
+
+  function shuffleVisible(animate = false) {
+    if (visible.length < 2 || shuffleAnimating) return;
     const randomIndex = Math.floor(Math.random() * (visible.length - 1));
-    goTo(randomIndex >= index ? randomIndex + 1 : randomIndex, false, false);
+    const targetIndex = randomIndex >= index ? randomIndex + 1 : randomIndex;
+    if (!animate || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      goTo(targetIndex, false, false);
+      return;
+    }
+    shuffleAnimating = true;
+    flashcard.classList.add('shuffle-toss');
+    setTimeout(() => {
+      flashcard.classList.remove('shuffle-toss');
+      goTo(targetIndex, false, false);
+      flashcard.classList.add('shuffle-deal');
+      setTimeout(() => {
+        flashcard.classList.remove('shuffle-deal');
+        shuffleAnimating = false;
+      }, 360);
+    }, 210);
   }
 
   const flashcard = byId('card').querySelector('.flash');
@@ -391,7 +408,7 @@ export function initStudy(words) {
       if (isDoubleTap) {
         event.preventDefault();
         lastCardTap = null;
-        shuffleVisible();
+        shuffleVisible(true);
       } else {
         lastCardTap = { time: now, x: event.clientX, y: event.clientY };
       }
@@ -422,7 +439,7 @@ export function initStudy(words) {
     if (event.target.closest('button, a, input, select')) return;
     if (!window.getSelection()?.isCollapsed) return;
     event.preventDefault();
-    shuffleVisible();
+    shuffleVisible(true);
   });
   search.addEventListener('input', () => {
     updateSuggestions();
@@ -444,7 +461,7 @@ export function initStudy(words) {
   search.addEventListener('focus', updateSuggestions);
   search.addEventListener('blur', closeSuggestions);
   byId('filter').addEventListener('change', () => applyFilters(false));
-  byId('shuffle').addEventListener('click', shuffleVisible);
+  byId('shuffle').addEventListener('click', () => shuffleVisible());
 
   const pronounceButton = byId('pronounce');
   if ('speechSynthesis' in window && 'SpeechSynthesisUtterance' in window) {
