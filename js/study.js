@@ -294,23 +294,92 @@ export function initStudy(words) {
   const flashcard = byId('card').querySelector('.flash');
   let swipeStart = null;
 
+  function resetSwipeCard() {
+    flashcard.classList.remove('swiping', 'swipe-left', 'swipe-right', 'swipe-away');
+    flashcard.style.removeProperty('--swipe-x');
+    flashcard.style.removeProperty('--swipe-rotate');
+    flashcard.style.removeProperty('--swipe-opacity');
+  }
+
+  function finishSwipe(direction) {
+    const nextIndex = index + direction;
+    if (nextIndex < 0 || nextIndex >= visible.length) {
+      flashcard.classList.add('swipe-snapback');
+      resetSwipeCard();
+      setTimeout(() => flashcard.classList.remove('swipe-snapback'), 260);
+      return;
+    }
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      resetSwipeCard();
+      goTo(nextIndex, false, false);
+      return;
+    }
+
+    const flyRight = direction < 0;
+    flashcard.classList.add('swipe-away', flyRight ? 'swipe-right' : 'swipe-left');
+    flashcard.style.setProperty('--swipe-x', flyRight ? '115vw' : '-115vw');
+    flashcard.style.setProperty('--swipe-rotate', flyRight ? '16deg' : '-16deg');
+    flashcard.style.setProperty('--swipe-opacity', '0');
+    setTimeout(() => {
+      resetSwipeCard();
+      goTo(nextIndex, false, false);
+    }, 220);
+  }
+
   flashcard.addEventListener('pointerdown', event => {
-    if (event.pointerType !== 'touch') return;
-    swipeStart = { id: event.pointerId, x: event.clientX, y: event.clientY };
+    if (event.pointerType !== 'touch' || event.target.closest('button, a, input, select')) return;
+    flashcard.classList.remove('swipe-snapback');
+    swipeStart = { id: event.pointerId, x: event.clientX, y: event.clientY, dragging: false };
+  });
+
+  flashcard.addEventListener('pointermove', event => {
+    if (!swipeStart || swipeStart.id !== event.pointerId) return;
+    const deltaX = event.clientX - swipeStart.x;
+    const deltaY = event.clientY - swipeStart.y;
+    if (!swipeStart.dragging) {
+      if (Math.abs(deltaY) > 12 && Math.abs(deltaY) > Math.abs(deltaX)) {
+        swipeStart = null;
+        return;
+      }
+      if (Math.abs(deltaX) < 8) return;
+      swipeStart.dragging = true;
+      flashcard.setPointerCapture(event.pointerId);
+      flashcard.classList.add('swiping');
+    }
+    event.preventDefault();
+    const limitedX = Math.max(-window.innerWidth * .72, Math.min(window.innerWidth * .72, deltaX));
+    const strength = Math.min(Math.abs(limitedX) / 150, 1);
+    flashcard.classList.toggle('swipe-left', limitedX < 0);
+    flashcard.classList.toggle('swipe-right', limitedX > 0);
+    flashcard.style.setProperty('--swipe-x', `${limitedX}px`);
+    flashcard.style.setProperty('--swipe-rotate', `${limitedX / 22}deg`);
+    flashcard.style.setProperty('--swipe-opacity', String(1 - strength * .18));
   });
 
   flashcard.addEventListener('pointerup', event => {
     if (!swipeStart || swipeStart.id !== event.pointerId) return;
     const deltaX = event.clientX - swipeStart.x;
     const deltaY = event.clientY - swipeStart.y;
+    const wasDragging = swipeStart.dragging;
     swipeStart = null;
-    if (Math.abs(deltaX) < 55 || Math.abs(deltaX) < Math.abs(deltaY) * 1.35) return;
+    if (!wasDragging) return;
+    if (flashcard.hasPointerCapture(event.pointerId)) flashcard.releasePointerCapture(event.pointerId);
     event.preventDefault();
-    goTo(index + (deltaX < 0 ? 1 : -1), false, false);
+    if (Math.abs(deltaX) >= 82 && Math.abs(deltaX) > Math.abs(deltaY) * 1.2) {
+      finishSwipe(deltaX < 0 ? 1 : -1);
+    } else {
+      flashcard.classList.add('swipe-snapback');
+      resetSwipeCard();
+      setTimeout(() => flashcard.classList.remove('swipe-snapback'), 260);
+    }
   });
 
   flashcard.addEventListener('pointercancel', () => {
     swipeStart = null;
+    flashcard.classList.add('swipe-snapback');
+    resetSwipeCard();
+    setTimeout(() => flashcard.classList.remove('swipe-snapback'), 260);
   });
   search.addEventListener('input', () => {
     updateSuggestions();
