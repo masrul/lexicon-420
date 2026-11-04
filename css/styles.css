@@ -75,14 +75,14 @@
 
 /* Card navigation with shuffle between the arrows. */
 .cardmeta{width:100%}
-.inline-card-nav{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;width:100%;gap:12px;margin:0}
-.inline-card-nav .btn{width:66px;height:38px;min-width:66px;min-height:38px;padding:0;display:grid;place-items:center;border-radius:11px;font-size:19px;box-shadow:none}
+.inline-card-nav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:center;width:100%;gap:12px;margin:0}
+.inline-card-nav .btn{width:100%;max-width:132px;height:38px;min-width:0;min-height:38px;padding:0;display:grid;place-items:center;border-radius:11px;font-size:19px;box-shadow:none}
 .inline-card-nav #prev{justify-self:start}.inline-card-nav #next{justify-self:end}.inline-card-nav #shuffle{justify-self:center}
 .inline-card-nav .pos{min-height:34px;display:grid;place-items:center;padding:4px 12px}
-@media(max-width:500px){.inline-card-nav{gap:8px}.inline-card-nav .btn{width:58px;height:36px;min-width:58px;min-height:36px}.inline-card-nav .pos{min-height:32px;padding:3px 9px}.cardmeta{font-size:11px}}
+@media(max-width:500px){.inline-card-nav{gap:8px}.inline-card-nav .btn{width:100%;max-width:116px;height:36px;min-width:0;min-height:36px}.inline-card-nav .pos{min-height:32px;padding:3px 9px}.cardmeta{font-size:11px}}
 
 .card-meta-summary{display:flex;align-items:center;gap:9px}.card-meta-summary .pos{padding:3px 9px}
-.inline-card-nav .shuffle-card{width:66px;min-width:66px;height:38px;min-height:38px;grid-column:auto;grid-row:auto;border-radius:11px;font-size:0}
+.inline-card-nav .shuffle-card{width:100%;max-width:132px;min-width:0;height:38px;min-height:38px;grid-column:auto;grid-row:auto;border-radius:11px;font-size:0}
 .inline-card-nav .shuffle-card:before{content:"";width:20px;height:20px;background:currentColor;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M0 3.5A.5.5 0 0 1 .5 3H1c2.202 0 3.827 1.24 4.874 2.418.49.552.865 1.102 1.126 1.532.26-.43.636-.98 1.126-1.532C9.173 4.24 10.798 3 13 3v1c-1.798 0-3.173 1.01-4.126 2.082A9.6 9.6 0 0 0 7.556 8a9.6 9.6 0 0 0 1.317 1.918C9.828 10.99 11.204 12 13 12v1c-2.202 0-3.827-1.24-4.874-2.418A10.6 10.6 0 0 1 7 9.05c-.26.43-.636.98-1.126 1.532C4.827 11.76 3.202 13 1 13H.5a.5.5 0 0 1 0-1H1c1.798 0 3.173-1.01 4.126-2.082A9.6 9.6 0 0 0 6.444 8a9.6 9.6 0 0 0-1.317-1.918C4.172 5.01 2.796 4 1 4H.5a.5.5 0 0 1-.5-.5'/%3E%3Cpath d='M13 5.466V1.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384l-2.36 1.966a.25.25 0 0 1-.41-.192m0 9v-3.932a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384l-2.36 1.966a.25.25 0 0 1-.41-.192'/%3E%3C/svg%3E") center/contain no-repeat;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M0 3.5A.5.5 0 0 1 .5 3H1c2.202 0 3.827 1.24 4.874 2.418.49.552.865 1.102 1.126 1.532.26-.43.636-.98 1.126-1.532C9.173 4.24 10.798 3 13 3v1c-1.798 0-3.173 1.01-4.126 2.082A9.6 9.6 0 0 0 7.556 8a9.6 9.6 0 0 0 1.317 1.918C9.828 10.99 11.204 12 13 12v1c-2.202 0-3.827-1.24-4.874-2.418A10.6 10.6 0 0 1 7 9.05c-.26.43-.636.98-1.126 1.532C4.827 11.76 3.202 13 1 13H.5a.5.5 0 0 1 0-1H1c1.798 0 3.173-1.01 4.126-2.082A9.6 9.6 0 0 0 6.444 8a9.6 9.6 0 0 0-1.317-1.918C4.172 5.01 2.796 4 1 4H.5a.5.5 0 0 1-.5-.5'/%3E%3Cpath d='M13 5.466V1.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384l-2.36 1.966a.25.25 0 0 1-.41-.192m0 9v-3.932a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384l-2.36 1.966a.25.25 0 0 1-.41-.192'/%3E%3C/svg%3E") center/contain no-repeat}
 .inline-card-nav .shuffle-card:before{content:"\21BB";width:auto;height:auto;background:none;mask:none;-webkit-mask:none;font-size:20px;line-height:1}
 .flash{touch-action:pan-y}
@@ -101,7 +101,7 @@
 .flash.shuffle-deal{animation:shuffleDeal .36s cubic-bezier(.2,.75,.25,1) both;pointer-events:none}
 @media(prefers-reduced-motion:reduce){.flash.shuffle-toss,.flash.shuffle-deal{animation:none}}
 .card-actions{grid-template-columns:1fr 1fr}.card-actions .btn{justify-self:stretch}
-@media(max-width:500px){.inline-card-nav .shuffle-card{width:58px;min-width:58px;height:36px;min-height:36px}.card-meta-summary{gap:6px}.card-meta-summary .pos{padding:3px 7px}}
+@media(max-width:500px){.inline-card-nav .shuffle-card{width:100%;max-width:116px;min-width:0;height:36px;min-height:36px}.card-meta-summary{gap:6px}.card-meta-summary .pos{padding:3px 7px}}
 
 /* Filter counts and compact word-type label. */
 .toolbar{grid-template-columns:minmax(0,1fr) 162px}
