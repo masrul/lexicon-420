@@ -302,8 +302,8 @@ export function initStudy(words) {
     updateWordProgress(word.word, { bookmark: !getWordProgress(word.word).bookmark });
   });
 
-  byId('prev').addEventListener('click', () => goTo(index - 1, false, false));
-  byId('next').addEventListener('click', () => goTo(index + 1, false, false));
+  byId('prev').addEventListener('click', () => finishSwipe(-1));
+  byId('next').addEventListener('click', () => finishSwipe(1));
 
   let shuffleAnimating = false;
 
@@ -462,7 +462,7 @@ export function initStudy(words) {
   search.addEventListener('focus', updateSuggestions);
   search.addEventListener('blur', closeSuggestions);
   byId('filter').addEventListener('change', () => applyFilters(false));
-  byId('shuffle').addEventListener('click', () => shuffleVisible());
+  byId('shuffle').addEventListener('click', () => shuffleVisible(true));
 
   const pronounceButton = byId('pronounce');
   if ('speechSynthesis' in window && 'SpeechSynthesisUtterance' in window) {
