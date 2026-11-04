@@ -324,8 +324,8 @@ export function initStudy(words) {
       setTimeout(() => {
         flashcard.classList.remove('shuffle-deal');
         shuffleAnimating = false;
-      }, 360);
-    }, 210);
+      }, 300);
+    }, 300);
   }
 
   const flashcard = byId('card').querySelector('.flash');
