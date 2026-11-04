@@ -95,10 +95,10 @@
 .flash.swipe-right:after{content:"previous";left:20px;color:var(--gold);transform:rotate(-7deg);opacity:.9}
 @media(prefers-color-scheme:dark){.flash:after{background:rgba(26,35,50,.82)}}
 @media(prefers-reduced-motion:reduce){.flash,.flash.swipe-snapback,.flash.swipe-away{transition:none}}
-@keyframes shuffleToss{0%{transform:translateX(0) rotate(0) scale(1);filter:blur(0);opacity:1}22%{transform:translateX(-14px) rotate(-2deg) scale(.97)}44%{transform:translateX(13px) rotate(2deg) scale(.94)}66%{transform:translateX(-9px) rotate(-1deg) scale(.91)}82%{transform:translateX(7px) rotate(1deg) scale(.89);opacity:.78}100%{transform:translateX(0) rotate(0) scale(.86);filter:blur(2px);opacity:0}}
-@keyframes shuffleDeal{0%{transform:scale(.88);filter:blur(2px);opacity:0}62%{transform:scale(1.018);filter:blur(0);opacity:1}100%{transform:scale(1);filter:blur(0);opacity:1}}
-.flash.shuffle-toss{animation:shuffleToss .3s cubic-bezier(.4,0,.65,1) both;pointer-events:none}
-.flash.shuffle-deal{animation:shuffleDeal .3s cubic-bezier(.2,.75,.25,1) both;pointer-events:none}
+@keyframes shuffleToss{0%{transform:perspective(1000px) rotateY(0) scale(1);opacity:1}100%{transform:perspective(1000px) rotateY(90deg) scale(.985);opacity:.45}}
+@keyframes shuffleDeal{0%{transform:perspective(1000px) rotateY(-90deg) scale(.985);opacity:.45}100%{transform:perspective(1000px) rotateY(0) scale(1);opacity:1}}
+.flash.shuffle-toss{animation:shuffleToss .26s cubic-bezier(.4,0,.7,1) both;pointer-events:none;backface-visibility:hidden}
+.flash.shuffle-deal{animation:shuffleDeal .32s cubic-bezier(.2,.75,.3,1) both;pointer-events:none;backface-visibility:hidden}
 @media(prefers-reduced-motion:reduce){.flash.shuffle-toss,.flash.shuffle-deal{animation:none}}
 .card-actions{grid-template-columns:1fr 1fr}.card-actions .btn{justify-self:stretch}
 @media(max-width:500px){.inline-card-nav .shuffle-card{width:100%;max-width:116px;min-width:0;height:36px;min-height:36px}.card-meta-summary{gap:6px}.card-meta-summary .pos{padding:3px 7px}}
