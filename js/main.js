@@ -1,5 +1,5 @@
 import { loadWords } from './data.js';
-import { initStudy } from './study.js?v=20261104-2';
+import { initStudy } from './study.js?v=20261104-3';
 import { initQuiz } from './quiz.js';
 import { initFirebaseSync } from './firebase-sync.js?v=20261103-2';
 

@@ -301,8 +301,8 @@ export function initStudy(words) {
     updateWordProgress(word.word, { bookmark: !getWordProgress(word.word).bookmark });
   });
 
-  byId('prev').addEventListener('click', () => goTo(index - 1));
-  byId('next').addEventListener('click', () => goTo(index + 1));
+  byId('prev').addEventListener('click', () => goTo(index - 1, false, false));
+  byId('next').addEventListener('click', () => goTo(index + 1, false, false));
 
   function shuffleVisible() {
     if (visible.length < 2) return;
