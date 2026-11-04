@@ -150,3 +150,8 @@ html,body{max-width:100%;overflow-x:hidden;overflow-x:clip}
 .control-wrap>.filter-menu .filter-label{display:none}
 .control-wrap>.filter-menu[open]>summary{border-color:#c9c2f7;border-radius:0 13px 0 0;background:var(--soft)}
 .control-wrap>.filter-menu .filter-panel{right:0;top:51px}
+
+/* Neutral outlined reveal/hide pill. */
+.btn#reveal{min-height:42px;padding:8px 21px;border:1px solid #a8adc0;border-radius:999px;background:transparent;color:#46506a;box-shadow:none}
+.btn#reveal:hover:not(:disabled){border-color:var(--accent);background:transparent;color:var(--accent);box-shadow:none}
+@media(prefers-color-scheme:dark){.btn#reveal{border-color:#69758a;color:#dce3ef}.btn#reveal:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}}

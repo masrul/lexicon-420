@@ -239,6 +239,7 @@ export function initStudy(words) {
 
     byId('answer').classList.toggle('hidden', !revealed);
     byId('details').classList.toggle('hidden', !revealed);
+    document.querySelector('.flash .prompt')?.classList.toggle('hidden', revealed);
     byId('reveal').textContent = revealed
       ? 'Hide'
       : 'Reveal';
