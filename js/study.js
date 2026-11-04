@@ -304,8 +304,15 @@ export function initStudy(words) {
   byId('prev').addEventListener('click', () => goTo(index - 1));
   byId('next').addEventListener('click', () => goTo(index + 1));
 
+  function shuffleVisible() {
+    if (visible.length < 2) return;
+    const randomIndex = Math.floor(Math.random() * (visible.length - 1));
+    goTo(randomIndex >= index ? randomIndex + 1 : randomIndex, false, false);
+  }
+
   const flashcard = byId('card').querySelector('.flash');
   let swipeStart = null;
+  let lastCardTap = null;
 
   function resetSwipeCard() {
     flashcard.classList.remove('swiping', 'swipe-left', 'swipe-right', 'swipe-away');
@@ -376,7 +383,21 @@ export function initStudy(words) {
     const deltaY = event.clientY - swipeStart.y;
     const wasDragging = swipeStart.dragging;
     swipeStart = null;
-    if (!wasDragging) return;
+    if (!wasDragging) {
+      const now = performance.now();
+      const isDoubleTap = lastCardTap
+        && now - lastCardTap.time < 340
+        && Math.hypot(event.clientX - lastCardTap.x, event.clientY - lastCardTap.y) < 28;
+      if (isDoubleTap) {
+        event.preventDefault();
+        lastCardTap = null;
+        shuffleVisible();
+      } else {
+        lastCardTap = { time: now, x: event.clientX, y: event.clientY };
+      }
+      return;
+    }
+    lastCardTap = null;
     if (flashcard.hasPointerCapture(event.pointerId)) flashcard.releasePointerCapture(event.pointerId);
     event.preventDefault();
     if (Math.abs(deltaX) >= 82 && Math.abs(deltaX) > Math.abs(deltaY) * 1.2) {
@@ -390,9 +411,18 @@ export function initStudy(words) {
 
   flashcard.addEventListener('pointercancel', () => {
     swipeStart = null;
+    lastCardTap = null;
     flashcard.classList.add('swipe-snapback');
     resetSwipeCard();
     setTimeout(() => flashcard.classList.remove('swipe-snapback'), 260);
+  });
+
+  flashcard.addEventListener('dblclick', event => {
+    if (event.sourceCapabilities?.firesTouchEvents) return;
+    if (event.target.closest('button, a, input, select')) return;
+    if (!window.getSelection()?.isCollapsed) return;
+    event.preventDefault();
+    shuffleVisible();
   });
   search.addEventListener('input', () => {
     updateSuggestions();
@@ -414,11 +444,7 @@ export function initStudy(words) {
   search.addEventListener('focus', updateSuggestions);
   search.addEventListener('blur', closeSuggestions);
   byId('filter').addEventListener('change', () => applyFilters(false));
-  byId('shuffle').addEventListener('click', () => {
-    if (visible.length < 2) return;
-    const randomIndex = Math.floor(Math.random() * (visible.length - 1));
-    goTo(randomIndex >= index ? randomIndex + 1 : randomIndex);
-  });
+  byId('shuffle').addEventListener('click', shuffleVisible);
 
   const pronounceButton = byId('pronounce');
   if ('speechSynthesis' in window && 'SpeechSynthesisUtterance' in window) {
