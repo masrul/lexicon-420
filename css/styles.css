@@ -135,3 +135,13 @@
 /* Keep iOS finder focus at the current zoom and contain swipe overflow. */
 html,body{max-width:100%;overflow-x:hidden;overflow-x:clip}
 @media(max-width:800px){input.field{font-size:16px}}
+
+/* Unified finder: search on the left, filter on the right. */
+.toolbar{display:block}
+.control-wrap .field{padding-right:58px}
+.control-wrap>.filter-menu{position:absolute;z-index:26;right:0;top:0}
+.control-wrap>.filter-menu>summary{width:48px;height:47px;padding:0;display:grid;place-items:center;grid-template-columns:1fr;border-color:transparent;border-left-color:var(--border);border-radius:0 13px 13px 0;background:transparent}
+.control-wrap>.filter-menu>summary svg{width:20px;height:20px}
+.control-wrap>.filter-menu .filter-label{display:none}
+.control-wrap>.filter-menu[open]>summary{border-color:#c9c2f7;border-radius:0 13px 0 0;background:var(--soft)}
+.control-wrap>.filter-menu .filter-panel{right:0;top:51px}

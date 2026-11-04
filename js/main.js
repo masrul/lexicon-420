@@ -1,5 +1,5 @@
 import { loadWords } from './data.js';
-import { initStudy } from './study.js?v=20261103-9';
+import { initStudy } from './study.js?v=20261104-1';
 import { initQuiz } from './quiz.js';
 import { initFirebaseSync } from './firebase-sync.js?v=20261103-2';
 
@@ -45,6 +45,7 @@ async function start() {
       filterSelect.classList.add('sr-only');
       filterMenu.append(summary, panel, filterSelect);
       filterControl.replaceWith(filterMenu);
+      document.querySelector('.control-wrap')?.append(filterMenu);
       filterMenu.addEventListener('toggle', () => {
         if (filterMenu.open) document.getElementById('appMenu')?.removeAttribute('open');
       });
