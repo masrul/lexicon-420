@@ -1,4 +1,5 @@
-const STORAGE_KEY = 'gre333-complete-v2';
+const STORAGE_KEY = 'lexicon420-progress-v1';
+const LEGACY_STORAGE_KEY = 'gre333-complete-v2';
 const UPDATED_KEY = `${STORAGE_KEY}-updatedAt`;
 const listeners = new Set();
 
@@ -6,7 +7,15 @@ let progress = readStoredProgress();
 
 function readStoredProgress() {
   try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+    const current = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    if (current) return current;
+    const legacy = JSON.parse(localStorage.getItem(LEGACY_STORAGE_KEY)) || {};
+    if (Object.keys(legacy).length) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(legacy));
+      const legacyUpdatedAt = localStorage.getItem(`${LEGACY_STORAGE_KEY}-updatedAt`);
+      if (legacyUpdatedAt) localStorage.setItem(UPDATED_KEY, legacyUpdatedAt);
+    }
+    return legacy;
   } catch {
     return {};
   }

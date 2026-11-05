@@ -1,6 +1,11 @@
-# Vocab 333 — Context Cards
+# Lexicon 420
 
-A polished, bilingual GRE vocabulary study app with 333 detailed flashcards.
+A bilingual vocabulary study app with 420 contextual flashcards, search, filtering,
+learned and bookmarked progress, quizzes, pronunciation, and optional cloud sync.
+
+The 420-word collection is compiled from the project owner's combined GRE study list.
+Existing reviewed cards were preserved during the migration from Vocab 333, and progress
+continues to use each word as its stable key.
 
 ## Features
 
