@@ -156,3 +156,15 @@ html,body{max-width:100%;overflow-x:hidden;overflow-x:clip}
 .btn#reveal{min-height:42px;padding:8px 21px;border:1px solid #a8adc0;border-radius:999px;background:transparent;color:#46506a;box-shadow:none}
 .btn#reveal:hover:not(:disabled){border-color:var(--accent);background:transparent;color:var(--accent);box-shadow:none}
 @media(prefers-color-scheme:dark){.btn#reveal{border-color:#69758a;color:#dce3ef}.btn#reveal:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}}
+/* Keep the selected index word easy to spot against the dark sidebar. */
+@media (prefers-color-scheme: dark) {
+  .worditem.current {
+    background: linear-gradient(135deg, rgba(136, 122, 255, .30), rgba(182, 175, 255, .14));
+    color: #f3f1ff;
+    box-shadow: inset 3px 0 0 var(--accent), inset 0 0 0 1px rgba(182, 175, 255, .30);
+  }
+
+  .worditem.current .num {
+    color: #d8d3ff;
+  }
+}
