@@ -20,11 +20,12 @@ continues to use each word as its stable key.
 
 **Tagline:** Learn the words. Understand the context.
 
+**Live app:** https://masrul.github.io/lexicon-420/
+
 ## Project structure
 
 ```text
 index.html             App interface
-assets/banner.png      Header artwork
 css/styles.css         Responsive styling and animations
 data/words.json        Vocabulary content
 js/main.js             App startup
