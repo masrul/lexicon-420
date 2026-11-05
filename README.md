@@ -16,7 +16,7 @@ continues to use each word as its stable key.
 - Responsive design for phones, tablets, and computers
 - Optional Google sign-in for cross-device progress synchronisation
 - Learned-words quiz with feedback, scoring, and retry support
-- Modular HTML, CSS, JavaScript, JSON data, and image assets
+- Modular HTML, CSS, JavaScript, encrypted vocabulary data, and image assets
 
 **Tagline:** Learn the words. Understand the context.
 
@@ -27,7 +27,7 @@ continues to use each word as its stable key.
 ```text
 index.html             App interface
 css/styles.css         Responsive styling and animations
-data/words.json        Vocabulary content
+data/lexicon.bin       AES-GCM encrypted vocabulary content
 js/main.js             App startup
 js/study.js            Flashcards, search, filters, and navigation
 js/quiz.js             Learned-words quiz

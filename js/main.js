@@ -1,4 +1,4 @@
-import { loadWords } from './data.js?v=20261104-editorial1';
+import { loadWords } from './data.js?v=20261104-encrypted1';
 import { initStudy } from './study.js?v=20261104-12';
 import { initQuiz } from './quiz.js';
 import { initFirebaseSync } from './firebase-sync.js?v=20261103-2';
