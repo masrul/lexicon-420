@@ -11,6 +11,14 @@ export function initStudy(words) {
   let revealed = false;
   let suggestionIndex = -1;
   let focusCardAfterRender = false;
+  const compareWords = (a, b) => a.word.localeCompare(b.word, 'en', {
+    sensitivity: 'base',
+  });
+  const alphabeticalRank = new Map(
+    [...words]
+      .sort(compareWords)
+      .map((word, rank) => [word.word, rank + 1]),
+  );
 
   const search = byId('search');
   const searchWrap = search.closest('.control-wrap');
@@ -176,15 +184,13 @@ export function initStudy(words) {
 
     const alphabeticalWords = visible
       .map((word, wordIndex) => ({ word, wordIndex }))
-      .sort((a, b) => a.word.word.localeCompare(b.word.word, 'en', {
-        sensitivity: 'base',
-      }));
+      .sort((a, b) => compareWords(a.word, b.word));
 
     alphabeticalWords.forEach(({ word, wordIndex }) => {
       const button = element('button', `worditem${wordIndex === index ? ' current' : ''}`);
       button.type = 'button';
       button.append(
-        element('span', 'num', String(word.id).padStart(3, '0')),
+        element('span', 'num', String(alphabeticalRank.get(word.word)).padStart(3, '0')),
         element('span', '', word.word),
       );
       if (getWordProgress(word.word).learned) button.append(element('span', 'check', '✓'));
