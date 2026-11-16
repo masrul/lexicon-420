@@ -90,6 +90,7 @@
 .flash.swiping{transition:none;cursor:grabbing;user-select:none;-webkit-user-select:none}
 .flash.swipe-snapback{transition:transform .26s cubic-bezier(.22,.8,.28,1),opacity .2s ease}
 .flash.swipe-away{transition:transform 1s cubic-bezier(.4,0,.8,.4),opacity .88s ease;pointer-events:none}
+@media(max-width:760px){.flash.swipe-away{transition:transform .45s cubic-bezier(.32,.72,.35,1),opacity .4s ease}}
 .flash:after{position:absolute;z-index:6;top:20px;padding:6px 12px;border:2px solid currentColor;border-radius:10px;background:rgba(255,255,255,.82);font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;opacity:0;pointer-events:none;transition:opacity .12s;backdrop-filter:blur(5px)}
 .flash.swipe-left:after{content:"next";right:20px;color:var(--accent);transform:rotate(7deg);opacity:.9}
 .flash.swipe-right:after{content:"previous";left:20px;color:var(--gold);transform:rotate(-7deg);opacity:.9}

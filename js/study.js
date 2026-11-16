@@ -343,6 +343,7 @@ export function initStudy(words) {
   const flashcard = byId('card').querySelector('.flash');
   let swipeStart = null;
   let lastCardTap = null;
+  const swipeAwayDuration = () => window.matchMedia('(max-width: 760px)').matches ? 450 : 1000;
 
   function resetSwipeCard() {
     flashcard.classList.remove('swiping', 'swipe-left', 'swipe-right', 'swipe-away');
@@ -374,7 +375,7 @@ export function initStudy(words) {
     setTimeout(() => {
       resetSwipeCard();
       goTo(nextIndex, false, false);
-    }, 1000);
+    }, swipeAwayDuration());
   }
 
   flashcard.addEventListener('pointerdown', event => {
