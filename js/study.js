@@ -174,7 +174,13 @@ export function initStudy(words) {
     const fragment = document.createDocumentFragment();
     list.replaceChildren();
 
-    visible.forEach((word, wordIndex) => {
+    const alphabeticalWords = visible
+      .map((word, wordIndex) => ({ word, wordIndex }))
+      .sort((a, b) => a.word.word.localeCompare(b.word.word, 'en', {
+        sensitivity: 'base',
+      }));
+
+    alphabeticalWords.forEach(({ word, wordIndex }) => {
       const button = element('button', `worditem${wordIndex === index ? ' current' : ''}`);
       button.type = 'button';
       button.append(
